@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procedimentos e Testes N1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --laranja: #F2421B;
+            --laranja-hover: #d93a17;
+            --azul: #002D5B;
+            --azul-grad: #0056b3;
+            --fundo: #f8f9fa;
+            --branco: #fff;
+            --texto: #212529;
+            --texto-sec: #6c757d;
+            --glass: rgba(255,255,255,0.8);
+            --borda-radius: 18px;
+            --blur: 18px;
+        }
+        body {
+            font-family: "Poppins",sans-serif;
+            background: linear-gradient(120deg, var(--azul-grad) 0%, var(--laranja) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px 0; /* Adicionado padding vertical para telas menores */
+        }
+        .support-tool {
+            backdrop-filter: blur(var(--blur));
+            background: var(--glass);
+            border-radius: var(--borda-radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+            max-width: 800px;
+            width: 95%; /* Ajustado para melhor responsividade */
+            padding: 0;
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--azul-grad) 0%, var(--azul) 100%);
+            padding: 30px 20px 20px;
+            text-align: center;
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+            position: relative;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2em;
+            color: var(--branco);
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            display: inline-block;
+        }
+        .tool-body {
+            padding: 32px 36px 20px;
+        }
+        label {
+            font-weight: 600;
+            font-size: 1.06em;
+            color: var(--azul);
+            margin-bottom: 10px;
+            display: block;
+        }
+        .problem-selector {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            background: #fdfdfd;
+            font-size: 1em;
+            font-family: inherit;
+            margin-bottom: 12px;
+        }
+        .procedure-display {
+            margin-top: 25px;
+            border-radius: 14px;
+            background: var(--branco);
+            border: 1px solid #e9ecef;
+            min-height: 270px;
+            padding: 20px 20px 30px;
+            position: relative;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        .procedure { display: none; }
+        .step { display: none; }
+        .procedure.active { display: block; }
+        .step.active { display: block; animation: fadeIn 0.4s ease-out;}
+        @keyframes fadeIn {from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+        .procedure-display h3 {color: var(--azul);margin-top:0;font-size:1.2em;}
+        ul {padding-left:10px;list-style:none;}
+        li {margin-bottom: 9px;line-height:1.55;}
+        code {background:#ffe8cc;color:#c05600;padding:2px 6px;border-radius:4px;font-family:monospace;}
+        .obs {font-size:0.95em;color:var(--texto-sec);margin-top:12px;border-left:3px solid #ced4da;padding-left:10px;}
+        a {color:var(--laranja);font-weight:500;text-decoration:none;}
+        a:hover {text-decoration:underline;}
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+        }
+        .nav-button {
+            background: var(--laranja);
+            color: var(--branco);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .nav-button:hover:not(:disabled) {
+            background: var(--laranja-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(242,66,27,0.3);
+        }
+        .nav-button:disabled {
+            background: #ced4da;
+            cursor: not-allowed;
+        }
+        .step-counter {
+            font-size:0.96em;
+            color:var(--texto-sec);
+            font-weight:500;
+            flex:1;
+            text-align:center;
+        }
+        .progress-bar {
+            width:100%;
+            height:7px;
+            border-radius:5px;
+            background: #e5e7eb;
+            margin-bottom: 4px;
+            overflow:hidden;
+        }
+        .progress-inner {
+            height:100%;
+            background: linear-gradient(90deg,var(--laranja),var(--azul-grad));
+            transition: width 0.2s;
+        }
+        #welcome-message {
+            text-align:center;
+            color:var(--texto-sec);
+            padding-top:38px;
+        }
+        #welcome-message svg {
+            width:80px;height:80px;margin-bottom:20px;opacity:0.5;animation:fadeIn 0.8s;}
+        /* Responsivo */
+        @media (max-width:600px){
+            .tool-body{padding:24px 18px;}
+            .procedure-display{padding:15px 12px 20px;}
+            .header h1{font-size:1.5em;}
+        }
+    </style>
+</head>
+<body>
+    <div class="support-tool">
+        <div class="header">
+            <h1>brisanet | Suporte N1</h1>
+        </div>
+        <div class="tool-body">
+            <label for="problem-selector">Selecione o problema para iniciar:</label>
+            <select id="problem-selector" class="problem-selector">
+                <option value="">-- Escolha uma opção --</option>
+                <option value="sem-sinal">Chip sem sinal</option>
+                <option value="dados-moveis">Dados móveis</option>
+                <option value="nao-realiza-ligacoes">Não realiza ligações</option>
+                <option value="nao-recebe-ligacoes">Não recebe ligações</option>
+                <option value="sms">SMS</option>
+                <option value="esim">eSIM</option>
+            </select>
+            <div class="progress-bar"><div class="progress-inner" id="progress-inner" style="width:0;"></div></div>
+            <div id="procedure-display" class="procedure-display">
+                <div id="welcome-message">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                    <p>Selecione um problema acima para ver o passo a passo.</p>
+                </div>
+                <div id="proc-sem-sinal" class="procedure">
+                    <div class="step" data-step="1"><h3>✅ Passo 1 – Verificar cadastro</h3><p>Verifique o cadastro do cliente no Service:</p><ul><li>Confirme se o ICCID do chip é o mesmo cadastrado do Service</li><li>Atualize os contratos e verifique o status da linha e contratos</li></ul></div>
+                    <div class="step" data-step="2"><h3>✅ Passo 2 – Testar o Chip em Outro Aparelho</h3><p>Insira o chip do cliente em outro celular:</p><ul><li>☑️ <strong>Funcionou</strong> → Prossiga para os próximos testes</li><li>❌ <strong>Não funcionou</strong> → Problema no chip ou falha no aprovisionamento</li></ul></div>
+                    <div class="step" data-step="3"><h3>✅ Passo 3 – Testar Outro Chip no Aparelho do Cliente</h3><p>Coloque outro chip Brisanet no aparelho do cliente:</p><ul><li>☑️ <strong>Funcionou</strong> → Problema é no chip original</li><li>❌ <strong>Não funcionou</strong> → Prossiga para os próximos testes</li></ul></div>
+                    <div class="step" data-step="4"><h3>✅ Passo 4 – Verificação de IMEI (Bloqueio ANATEL)</h3><p>Disque <code>*#06#</code> e anote o IMEI exibido.</p><p>Acesse <a href="#" target="_blank">Consulta Aparelho Anatel</a></p><p>Insira o IMEI no campo indicado e clique em Consultar.</p><ul><li>☑️ <strong>Não impedido</strong> → aparelho liberado para uso.</li><li>❌ <strong>Impedido</strong> → bloqueado pela Anatel (perda, roubo ou fraude).</li></ul><p class="obs">OBS. Apenas o titular pode solicitar o desbloqueio junto à operadora que realizou o bloqueio.</p></div>
+                    <div class="step" data-step="5"><h3>✅ Passo 5 – Realizar abertura de chamado</h3><p>Abrir chamado no Jira para o Suporte N2 e ligar na fila 680, onde será realizado a análise do aprovisionamento no Core.</p><p><a href="#" target="_blank">Formulário: Abrir chamado N2</a></p><ul><li>☑️ Se for identificado falha → corrigido pelo N2 ou N3</li><li>❌ Se não for identificado falha → o N2 irá sinalizar a troca de chip</li></ul></div>
+                </div>
+                <div id="proc-dados-moveis" class="procedure">
+                    <div class="step" data-step="1"><h3>✅ Passo 1 – Verificar cadastro</h3><p>Verifique o cadastro do cliente no Service:</p><ul><li>Confirme se o ICCID do chip é o mesmo do cadastro do Service</li><li>Atualize os contratos e verifique o status da linha e contratos</li></ul><p>Caso a linha esteja com o status n/a ou contrato não ativo, abrir chamado para a equipe de TI através do link: <a href="#" target="_blank">Formulário T.I</a></p></div>
+                    <div class="step" data-step="2"><h3>✅ Passo 2 – Conferir Cobertura</h3><p>Verifique se no local existe cobertura Brisanet (4G/5G). <a href="#" target="_blank">Cobertura Brisanet - KMZ</a></p></div>
+                    <div class="step" data-step="3"><h3>✅ Passo 3 – Compatibilidade do Aparelho</h3><p>Verifique se o aparelho suporta: 4G: Banda B40 ou 5G: Bandas N4 e N78.</p><p><a href="#" target="_blank">Aparelhos Homologados | MaisCelular</a></p></div>
+                    <div class="step" data-step="4"><h3>✅ Passo 4 – APN Brisanet</h3><p>Verifique se o chip precisa estar configurado corretamente com a APN Brisanet.</p><p><a href="#" target="_blank">Tutorial: APN Brisanet</a></p></div>
+                    <div class="step" data-step="5"><h3>✅ Passo 5 – Tipo de Rede Preferencial</h3><p>Verifique o tipo de rede selecionada: LTE (4G) ou 5G.</p><ul><li>📱 <strong>Samsung:</strong> Configurações > Conexões > Redes móveis > Seleção de banda</li><li>📱 <strong>Xiaomi:</strong> Configurações > redes móveis > [Chip Brisanet] > Tipo de rede preferencial</li><li>📱 <strong>Motorola:</strong> Configurações > Rede e internet > Rede móvel > Tipo de rede preferida</li><li>📱 <strong>iPhone:</strong> Ajustes > Celular > Opções de Dados Celulares > Voz e Dados</li></ul></div>
+                    <div class="step" data-step="6"><h3>✅ Passo 6 – Seleção de Rede</h3><p>Realize uma busca de rede no aparelho para verificar se ele reconhece nossa rede. Devem aparecer duas redes Brisanet — uma principal e uma em roaming (TIM). Para que o aparelho alterne conforme a cobertura, mantenha a seleção de rede em modo automático.</p><ul><li>📱 <strong>Samsung:</strong> Configuração > Conexões > Redes móveis > Configuração de rede</li><li>📱 <strong>Xiaomi:</strong> Configuração > Redes móveis > Chip Brisanet > Redes móveis</li><li>📱 <strong>Motorola:</strong> Configuração > Rede e internet > Rede móvel > Selecionar chip Brisanet > Avançado</li><li>📱 <strong>iPhone:</strong> Ajustes > Celular > Seleção de rede</li></ul></div>
+                    <div class="step" data-step="7"><h3>✅ Passo 7 – Atualização de Software</h3><p>Mantenha o dispositivo sempre atualizado.</p><ul><li>📱<strong>Samsung:</strong> Configurações > Atualização de software > Baixar e instalar</li><li>📱 <strong>Xiaomi:</strong> Configurações > Sobre o telefone > Toque em Xiaomi HyperOS</li><li>📱<strong>Motorola:</strong> Configurações > Sistema > Atualização de software</li><li>📱<strong>iPhone:</strong> Ajustes > Geral > Atualização de Software</li></ul></div>
+                    <div class="step" data-step="8"><h3>✅ Passo 8 – Resetar Ajustes de Rede</h3><p>Resete os ajustes de rede do aparelho. Isso garante a exclusão de possíveis configurações incorretas, permitindo que sejam refeitas corretamente.</p><p><a href="#" target="_blank">Redefinir ajustes de rede</a></p></div>
+                    <div class="step" data-step="9"><h3>✅ Passo 9 – Testar Chip em Outro Aparelho</h3><p>Coloque o chip do cliente em um aparelho da loja:</p><ul><li>☑️ <strong>Funcionou</strong> → problema é de configuração no celular do cliente</li><li>❌ <strong>Não funcionou</strong> → Realizar análise no Core junto ao N2</li></ul></div>
+                    <div class="step" data-step="10"><h3>✅ Passo 10 – Realizar abertura de chamado</h3><p>Após todos os procedimentos, se o problema persistir, abrir chamado para o suporte nível 2 (N2) com evidências.</p><p>Abrir chamado no link: <a href="#" target="_blank">Formulário Jira</a></p></div>
+                </div>
+                <div id="proc-nao-realiza-ligacoes" class="procedure">
+                    <div class="step" data-step="1"><h3>✅ Passo 1 – Verificar cadastro</h3><p>Verifique o cadastro do cliente no Service:</p><ul><li>Confirme se o ICCID do chip é o mesmo cadastrado do Service</li><li>Atualize os contratos e verifique o status da linha e contratos</li></ul></div>
+                    <div class="step" data-step="2"><h3>✅ Passo 2 – Registrar VoLTE</h3><p>Verifique se o VoLTE está ativo no aparelho do cliente.</p><ul><li>☑️ <strong>Registrado</strong> → siga para o próximo passo</li><li>❌ <strong>Não registrado</strong> → habilite o VoLTE <a href="#" target="_blank">Como Registrar o VoLTE</a></li></ul></div>
+                    <div class="step" data-step="3"><h3>✅ Passo 3 – Forma de Discagem</h3><p>Oriente o cliente a realizar a discagem correta:</p><ul><li>☑️ <code>0 + DDD + Número</code> (exemplo: <code>085 9XXXX-XXXX</code>)</li></ul></div>
+                    <div class="step" data-step="4"><h3>✅ Passo 4 – Filtrar Operadora de destino</h3><p>Filtre se os números de destino que o cliente está tentando ligar pertencem a uma operadora específica.</p></div>
+                    <div class="step" data-step="5"><h3>✅ Passo 5 – Teste na Loja</h3><p>Realize uma ligação do aparelho da loja para os destinos informados pelo cliente.</p><ul><li>☑️ <strong>Chamou normalmente</strong> → teste o chip do cliente no aparelho da loja</li><li>❌ <strong>Mesmo erro</strong> → prossiga para abertura de chamado</li></ul></div>
+                    <div class="step" data-step="6"><h3>✅ Passo 6 – Realizar abertura de chamado</h3><p>Caso o problema persista, abrir chamado no Jira para o Suporte N2: <a href="#" target="_blank">Formulário Jira</a>.</p><p>Informar: horários dos testes, números de destino e anexe: print, foto ou vídeo do erro.</p></div>
+                </div>
+                <div id="proc-nao-recebe-ligacoes" class="procedure">
+                    <div class="step" data-step="1"><h3>✅ Passo 1 – Registrar VoLTE</h3><p>Verifique se o VoLTE está ativo no aparelho do cliente.</p><ul><li>☑️ <strong>Registrado</strong> → siga para o próximo passo</li><li>❌ <strong>Não registrado</strong> → habilite o VoLTE (<a href="#" target="_blank">Como Registrar o VoLTE</a>)</li></ul></div>
+                    <div class="step" data-step="2"><h3>✅ Passo 2 – Forma de Discagem (origem)</h3><p>Oriente o cliente de origem a realizar a discagem correta:</p><ul><li><strong>Ligação Local (mesma cidade):</strong> Digite apenas o número → <code>9XXXX-XXXX</code></li><li><strong>Ligação Longa Distância (DDD diferente):</strong> <code>0 + Código da operadora + DDD + Número</code></li><li>Claro: <code>021 + DDD + Número</code></li><li>TIM: <code>041 + DDD + Número</code></li><li>Vivo: <code>015 + DDD + Número</code></li></ul></div>
+                    <div class="step" data-step="3"><h3>✅ Passo 3 – Filtrar Operadora de Origem</h3><p>Verifique se o problema ocorre com alguma operadora específica:</p><ul><li>Solicite ao cliente os números de origem que não consegue ligar para o mesmo.</li><li>Acesse o site: <a href="#" target="_blank">Consulta Número</a>.</li><li>Insira o número e confirme a operadora atual.</li></ul></div>
+                    <div class="step" data-step="4"><h3>✅ Passo 4 – Bloqueio de Chamadas SPAM</h3><p>Verifique no aparelho do cliente se a opção de bloqueio de chamadas SPAM está ativada: <a href="#" target="_blank">Desativar SPAM</a>.</p><ul><li>☑️ <strong>Desativado</strong> → siga para o próximo passo</li><li>❌ <strong>Ativado</strong> → desative e realize novo teste</li></ul></div>
+                    <div class="step" data-step="5"><h3>✅ Passo 5 – Realizar abertura de chamado</h3><p>Caso o problema persista, abrir chamado no Jira para o Suporte N2: <a href="#" target="_blank">Formulário Jira</a>.</p><p>Informar: horários dos testes, números de origem e anexe: print, foto ou vídeo do erro.</p></div>
+                </div>
+                <div id="proc-sms" class="procedure">
+                    <div class="step" data-step="1"><h3>✅ Passo 1 – Verificar cadastro</h3><p>Verifique o cadastro do cliente no Service:</p><ul><li>Confirme se o ICCID do chip é o mesmo cadastrado do Service.</li><li>Atualize os contratos e verifique o status da linha e contratos.</li></ul></div>
+                    <div class="step" data-step="2"><h3>✅ Passo 2 – Registrar VoLTE</h3><p>Verifique se o VoLTE está ativo no aparelho do cliente.</p><ul><li>☑️ <strong>Registrado</strong> → siga para o próximo passo</li><li>❌ <strong>Não registrado</strong> → habilite o VoLTE (<a href="#" target="_blank">Como Registrar o VoLTE</a>)</li></ul></div>
+                    <div class="step" data-step="3"><h3>✅ Passo 3 – Forma de Discagem</h3><p>Oriente o cliente a usar a discagem: <code>DDD + NÚMERO</code>, Exemplo: <code>88912345678</code>.</p></div>
+                    <div class="step" data-step="4"><h3>✅ Passo 4 – Testar SMS</h3><p>Enviar um SMS do aparelho da loja para o cliente e oriente a responder o SMS.</p></div>
+                    <div class="step" data-step="5"><h3>✅ Passo 5 – Desativar Chat RCS (Android) e iMessage (iPhone)</h3><ul><li>📱 <strong>iPhone:</strong> Ajustes > Apps > Mensagens > iMessage</li><li>📱 <strong>Android:</strong> Abre o app de mensagens > Configurações do mensagens > Chat RCS</li></ul><p><a href="#" target="_blank">Tutorial</a></p></div>
+                    <div class="step" data-step="6"><h3>✅ Passo 6 – Corrigir Número nas Configurações (iPhone)</h3><p>O número incorreto pode impedir o envio de SMS.</p><ul><li>📱 <strong>iPhone:</strong> Ajustes > Apps > Telefone > Meu Número</li></ul><p>Caso não consiga corrigir manualmente é necessário resetar os ajustes de rede:<br>Ajustes > Geral > Transferir ou Redefinir o iPhone > Redefinir > Redefinir Ajustes de Rede</p></div>
+                    <div class="step" data-step="7"><h3>✅ Passo 7 – Testar Chip em Outro Aparelho</h3><p>Coloque o chip do cliente em outro aparelho:</p><ul><li>☑️ <strong>Funcionou</strong> → o problema está no celular do cliente, sendo necessário revisar configurações.</li><li>❌ <strong>Não funcionou</strong> → seguir para abertura de chamado.</li></ul></div>
+                    <div class="step" data-step="8"><h3>✅ Passo 8 – Realizar abertura de chamado</h3><p>Caso o problema persista, abrir chamado no Jira para o Suporte N2: <a href="#" target="_blank">Formulário Jira</a>.</p><p>Informar: horários dos testes, números de origem/destino e anexe evidências (print, foto ou vídeo do erro).</p></div>
+                </div>
+                <div id="proc-esim" class="procedure">
+                     <div class="step" data-step="1"><h3>✅ Passo 1 – Verificar Cadastro no Service</h3><p>Confirme o ICCID do eSIM e se a linha está corretamente cadastrada e ativa no Service.</p></div>
+                     <div class="step" data-step="2"><h3>✅ Passo 2 – Verificar Aparelho de Leitura</h3><p>Confirme se o cliente está ativando o eSIM no mesmo aparelho em que foi instalado. Caso tenha trocado de dispositivo, o eSIM não funcionará e será necessário emitir um novo QR Code com a troca de chip.</p></div>
+                     <div class="step" data-step="3"><h3>✅ Passo 3– Confirmar Versão do eSIM</h3><p>P07 e P09: Compatíveis com dispositivos 5G<br>P08 e P10: Compatíveis com dispositivos 4G</p><p><a href="#" target="_blank">Compatibilidade eSIM</a></p></div>
+                     <div class="step" data-step="4"><h3>✅ Passo 4 – Habilitar Wi-Fi</h3><p>Ative o Wi-Fi no aparelho para que a leitura do QR Code do eSIM seja realizada.</p></div>
+                     <div class="step" data-step="5"><h3>✅ Passo 5 – Atualizar e Reiniciar o Dispositivo</h3><p>Mantenha o aparelho atualizado e reinicie para ser corrigido possíveis falhas do sistema.</p></div>
+                     <div class="step" data-step="6"><h3>✅ Passo 6 – Abrir chamado</h3><p>Se após os procedimentos, o problema persistir: Abrir chamado para o Suporte N2 com as seguintes informações: modelo do aparelho, versão do eSIM, EID (disque <code>*#06#</code>) e erro apresentado.</p><p><a href="#" target="_blank">Formulário Jira</a></p></div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button id="prev-btn" class="nav-button" disabled>Anterior</button>
+                <span id="step-counter" class="step-counter"></span>
+                <button id="next-btn" class="nav-button" disabled>Próximo</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const problemSelector = document.getElementById('problem-selector');
+        const procedureDisplay = document.getElementById('procedure-display');
+        const welcomeMessage = document.getElementById('welcome-message');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const stepCounter = document.getElementById('step-counter');
+        const progressInner = document.getElementById('progress-inner');
+
+        let currentProcedure = null, currentStepIndex = 0, totalSteps = 0;
+
+        problemSelector.addEventListener('change', (event) => {
+            const selectedValue = event.target.value;
+            document.querySelectorAll('.procedure').forEach(proc => proc.classList.remove('active'));
+            if (selectedValue) {
+                welcomeMessage.style.display = 'none';
+                currentProcedure = document.getElementById(`proc-${selectedValue}`);
+                if (currentProcedure) {
+                    currentProcedure.classList.add('active');
+                    const steps = currentProcedure.querySelectorAll('.step');
+                    totalSteps = steps.length;
+                    currentStepIndex = 0;
+                    showStep(currentStepIndex);
+                }
+            } else {
+                welcomeMessage.style.display = 'block';
+                currentProcedure = null;
+                updateButtons();
+                updateProgress();
+                hideAllSteps();
+            }
+        });
+
+        function hideAllSteps() {
+            document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+        }
+
+        function showStep(index) {
+            if (!currentProcedure) return;
+            const steps = currentProcedure.querySelectorAll('.step');
+            steps.forEach(step => step.classList.remove('active'));
+            if (steps[index]) {
+                steps[index].classList.add('active');
+            }
+            updateButtons();
+            updateProgress();
+        }
+
+        function updateButtons() {
+            if (!currentProcedure) {
+                prevBtn.disabled = true;
+                nextBtn.disabled = true;
+                stepCounter.textContent = '';
+                return;
+            }
+            prevBtn.disabled = (currentStepIndex === 0);
+            nextBtn.disabled = (currentStepIndex >= totalSteps - 1);
+            stepCounter.textContent = `Passo ${currentStepIndex + 1} de ${totalSteps}`;
+        }
+
+        function updateProgress() {
+            let percent = totalSteps ? ((currentStepIndex + 1) / totalSteps) * 100 : 0;
+            progressInner.style.width = percent + '%';
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentStepIndex < totalSteps - 1) {
+                currentStepIndex++;
+                showStep(currentStepIndex);
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentStepIndex > 0) {
+                currentStepIndex--;
+                showStep(currentStepIndex);
+            }
+        });
+    </script>
+</body>
+</html>
